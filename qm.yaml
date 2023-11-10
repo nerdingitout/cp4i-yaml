@@ -1,0 +1,56 @@
+apiVersion: mq.ibm.com/v1beta1
+kind: QueueManager
+metadata:
+  name: qm1
+  namespace: cp4i-test-1
+  labels:
+    environment: mvp
+spec:
+  license:
+    accept: true
+    license: L-YBXJ-ADJNSM
+    use: NonProduction
+  web:
+    enabled: true
+  telemetry:
+    tracing:
+      instana:
+        enabled: true
+  version: 9.3.3.2-r1
+  template:
+    pod:
+      containers:
+        - env:
+            - name: MQSNOAUT
+              value: 'yes'
+          name: qmgr
+  queueManager:
+    mqsc:
+    - configMap:
+        items:
+        - qm.mqsc
+        name: mqsc-setting
+    resources:
+      limits:
+        cpu: 300m
+      requests:
+        cpu: 100m
+    name: QM1
+    availability:
+      type: NativeHA
+    storage:
+      defaultClass: ocs-storagecluster-ceph-rbd
+      persistedData:
+        class: ocs-storagecluster-ceph-rbd
+        enabled: true
+        size: 1Gi
+        type: persistent-claim
+      queueManager:
+        class: ocs-storagecluster-ceph-rbd
+        size: 1Gi
+        type: persistent-claim
+      recoveryLogs:
+        class: ocs-storagecluster-ceph-rbd
+        enabled: true
+        size: 1Gi
+        type: persistent-claim
